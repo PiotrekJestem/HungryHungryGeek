@@ -7,22 +7,18 @@ using System.Threading.Tasks;
 
 namespace Repository.Models
 {
-    public class Order
+    public class Report
     {
         [Key]
-        [Display(Name = "Order Id:")]
-        public int OrderId { get; set; }
-        
-        [Display(Name = "Order Date:")]
+        [Display(Name = "Report Id:")]
+        public int ReportId { get; set; }
+
+        [Display(Name = "Report Date:")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
-        public DateTime OrderDate { get; set; }
+        public DateTime ReportDate { get; set; }
 
         public string UserId { get; set; }
-
-        public int MealId { get; set; }
-
-        public virtual Meal MealToOrder { get; set; }
 
         public virtual User User { get; set; }
     }

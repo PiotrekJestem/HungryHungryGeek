@@ -9,9 +9,14 @@ namespace Repository.Models
 {
     public class Dish
     {
+        public Dish()
+        {
+            this.Meals = new HashSet<Meal>();
+        }
+
         [Key]
-        [Display(Name = "Id:")]
-        public int Id { get; set; }
+        [Display(Name = "Dish Id:")]
+        public int DishId { get; set; }
 
         [Display(Name = "Name:")]
         [Required]
@@ -26,5 +31,7 @@ namespace Repository.Models
         [Display(Name = "Price:")]
         [Required]
         public double Price { get; set; }
+
+        public ICollection<Meal> Meals { get; set; }
     }
 }

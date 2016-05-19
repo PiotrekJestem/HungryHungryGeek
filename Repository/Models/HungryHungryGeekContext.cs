@@ -22,5 +22,6 @@ namespace Repository.Models
         public DbSet<Meal> Meals { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Report> Reports { get; set; }
     }
 }

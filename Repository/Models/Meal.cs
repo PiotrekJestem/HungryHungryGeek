@@ -15,9 +15,9 @@ namespace Repository.Models
         }
 
         [Key]
-        [Display(Name = "Id:")]
-        public int Id { get; set; }
+        [Display(Name = "Meal Id:")]
+        public int MealId { get; set; }
 
-        public virtual ICollection<Dish> Dishes { get; private set; }
+        public ICollection<Dish> Dishes { get; set; }
     }
 }

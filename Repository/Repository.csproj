@@ -122,13 +122,24 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Migrations\201605191911423_starting.cs" />
+    <Compile Include="Migrations\201605191911423_starting.Designer.cs">
+      <DependentUpon>201605191911423_starting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Dish.cs" />
     <Compile Include="Models\HungryHungryGeekContext.cs" />
     <Compile Include="Models\Meal.cs" />
     <Compile Include="Models\Order.cs" />
+    <Compile Include="Models\Report.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Views\AccountViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201605191911423_starting.resx">
+      <DependentUpon>201605191911423_starting.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

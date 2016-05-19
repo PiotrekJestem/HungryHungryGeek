@@ -10,14 +10,14 @@ namespace Repository.Models
     {
         public User()
         {
-            this.Meals = new HashSet<Meal>();
+            this.Orders = new HashSet<Order>();
         }
 
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
 
-        public virtual ICollection<Meal> Meals { get; private set; }
+        public virtual ICollection<Order> Orders { get; private set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
