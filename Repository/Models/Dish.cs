@@ -18,7 +18,7 @@ namespace Repository.Models
         [Display(Name = "Dish Id:")]
         public int DishId { get; set; }
 
-        [Display(Name = "Name:")]
+        [Display(Name = "Dish Name:")]
         [Required]
         [MaxLength(40)]
         public string Name { get; set; }

@@ -1,0 +1,16 @@
+﻿@model bool
+
+@{
+    ViewBag.Title = "Complete today's orders";
+}
+
+<h2>Redeem today's orders</h2>
+@if(Model != true)
+{
+<p>If you want to complete today's orders for everyone then click below.</p>
+@Html.ActionLink("Complete", "CompleteOrders")
+}
+else
+{
+<p>Somebody's already completed today's orders.</p>
+}

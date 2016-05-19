@@ -40,8 +40,8 @@ namespace Repository.Migrations
 
             if (!context.Users.Any(u => u.UserName == "Admin"))
             {
-                var user = new User {UserName = "Admin"};
-                var adminresult = manager.Create(user, "password");
+                var user = new User {UserName = "admin@admin.com"};
+                var adminresult = manager.Create(user, "ABcd!@34");
 
                 if (adminresult.Succeeded)
                 {
