@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HungryHungryGeek.Models
+namespace Repository.Models
 {
     public class Dish
     {

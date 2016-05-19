@@ -8,7 +8,8 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using HungryHungryGeek.Models;
+using Repository.Models;
+using Repository.Models.Views;
 
 namespace HungryHungryGeek.Controllers
 {

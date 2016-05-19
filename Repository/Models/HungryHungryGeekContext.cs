@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 
-namespace HungryHungryGeek.Models
+namespace Repository.Models
 {
     public class HungryHungryGeekContext : IdentityDbContext
     {

@@ -4,7 +4,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace HungryHungryGeek.Models
+namespace Repository.Models
 {
     public class User : IdentityUser
     {

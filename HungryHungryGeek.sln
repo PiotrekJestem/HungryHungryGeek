@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HungryHungryGeek", "HungryH
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HungryHungryGeek.Tests", "HungryHungryGeek.Tests\HungryHungryGeek.Tests.csproj", "{AB7CE69B-FE8B-41C2-A0D8-E2EB9E393BA6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "Repository\Repository.csproj", "{8CFD50A8-8304-4A2D-A7E8-12E2FE18E0A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{AB7CE69B-FE8B-41C2-A0D8-E2EB9E393BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB7CE69B-FE8B-41C2-A0D8-E2EB9E393BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB7CE69B-FE8B-41C2-A0D8-E2EB9E393BA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CFD50A8-8304-4A2D-A7E8-12E2FE18E0A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CFD50A8-8304-4A2D-A7E8-12E2FE18E0A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CFD50A8-8304-4A2D-A7E8-12E2FE18E0A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CFD50A8-8304-4A2D-A7E8-12E2FE18E0A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
