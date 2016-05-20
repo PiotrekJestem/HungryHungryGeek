@@ -24,8 +24,8 @@ namespace HungryHungryGeek.Controllers
         // For test purposes only
         public DishesController()
         {
-            
         }
+
         public DishesController(IDishRepo dishRepo, IOrderRepo orderRepo, IReportRepo reportRepo)
         {
             _dishRepo = dishRepo;
@@ -160,6 +160,8 @@ namespace HungryHungryGeek.Controllers
 
         public ActionResult Cart()
         {
+            if (DateTime.Now.Hour >= 12)
+                return RedirectToAction("Volunteer");
             var dishes = System.Web.HttpContext.Current.Session["cartContent"] as List<Dish> ?? new List<Dish>();
             return View(dishes);
         }
