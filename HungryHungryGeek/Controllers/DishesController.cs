@@ -8,22 +8,41 @@ using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
+using Repository.IRepo;
 using Repository.Models;
+using Repository.Repo;
 
 namespace HungryHungryGeek.Controllers
 {
     [Authorize]
     public class DishesController : Controller
     {
-        private HungryHungryGeekContext db = new HungryHungryGeekContext();
+        private readonly IDishRepo _dishRepo;
+        private readonly IOrderRepo _orderRepo;
+        private readonly IReportRepo _reportRepo;
+
+        // For test purposes only
+        public DishesController()
+        {
+            
+        }
+        public DishesController(IDishRepo dishRepo, IOrderRepo orderRepo, IReportRepo reportRepo)
+        {
+            _dishRepo = dishRepo;
+            _orderRepo = orderRepo;
+            _reportRepo = reportRepo;
+        }
 
         // GET: Dishes
         public ActionResult Index()
         {
             if (DateTime.Now.Hour >= 12)
                 return RedirectToAction("Volunteer");
-            return View(db.Dishes.ToList());
+
+            var allDishes = _dishRepo.GetDishes();
+            return View(allDishes);
         }
+
 
         // GET: Dishes/Details/5
         public ActionResult Details(int? id)
@@ -32,7 +51,7 @@ namespace HungryHungryGeek.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Dish dish = db.Dishes.Find(id);
+            Dish dish = _dishRepo.GetDish(id);
             if (dish == null)
             {
                 return HttpNotFound();
@@ -54,8 +73,8 @@ namespace HungryHungryGeek.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Dishes.Add(dish);
-                db.SaveChanges();
+                _dishRepo.CreateDish(dish);
+                _dishRepo.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -70,7 +89,7 @@ namespace HungryHungryGeek.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Dish dish = db.Dishes.Find(id);
+            Dish dish = _dishRepo.GetDish(id);
             if (dish == null)
             {
                 return HttpNotFound();
@@ -85,8 +104,8 @@ namespace HungryHungryGeek.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(dish).State = EntityState.Modified;
-                db.SaveChanges();
+                _dishRepo.UpdateDish(dish);
+                _dishRepo.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(dish);
@@ -100,7 +119,7 @@ namespace HungryHungryGeek.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Dish dish = db.Dishes.Find(id);
+            Dish dish = _dishRepo.GetDish(id);
             if (dish == null)
             {
                 return HttpNotFound();
@@ -113,9 +132,8 @@ namespace HungryHungryGeek.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Dish dish = db.Dishes.Find(id);
-            db.Dishes.Remove(dish);
-            db.SaveChanges();
+            _dishRepo.DeleteDish(id);
+            _dishRepo.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -125,7 +143,7 @@ namespace HungryHungryGeek.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Dish dish = db.Dishes.Find(id);
+            Dish dish = _dishRepo.GetDish(id);
             if (dish == null)
             {
                 return HttpNotFound();
@@ -164,7 +182,7 @@ namespace HungryHungryGeek.Controllers
         {
             var dishes = System.Web.HttpContext.Current.Session["cartContent"] as List<Dish>;
             var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            var currentUser = db.Users.Find(User.Identity.GetUserId());
+            var currentUser = _reportRepo.GetUserById(User.Identity.GetUserId());
             if (dishes != null)
             {
                 var createdMeal = new Meal
@@ -183,8 +201,8 @@ namespace HungryHungryGeek.Controllers
                     Subject = "HungryHungryGeek - Your order",
                     Body = prepareMailBodyForSingleOrder(order)
                 });
-                db.Orders.Add(order);
-                db.SaveChanges();
+                _orderRepo.CreateOrder(order);
+                _orderRepo.SaveChanges();
                 System.Web.HttpContext.Current.Session.Remove("cartContent");
                 return RedirectToAction("Index", "Home");
             }
@@ -196,12 +214,11 @@ namespace HungryHungryGeek.Controllers
         {
             if (DateTime.Now.Hour >= 12)
             {
-                if (db.Reports.ToList().All(x => x.ReportDate.Date != DateTime.Today))
+                if (_reportRepo.AnyWithDate(DateTime.Today))
                 {
-                    // Very poor performance, but will do for PoC
-                    var orders = db.Orders.ToList().Where(x => x.OrderDate.Date == DateTime.Today).ToList();
+                    var orders = _orderRepo.GetByDate(DateTime.Today);
                     var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                    var currentUser = db.Users.Find(User.Identity.GetUserId());
+                    var currentUser = _reportRepo.GetUserById(User.Identity.GetUserId());
                     if (orders.Any())
                     {
                         await userManager.EmailService.SendAsync(new IdentityMessage
@@ -210,8 +227,8 @@ namespace HungryHungryGeek.Controllers
                             Subject = "HungryHungryGeek - Complete order",
                             Body = prepareMailBodyForReport(orders)
                         });
-                        db.Reports.Add(new Report {ReportDate = DateTime.Now, User = currentUser});
-                        db.SaveChanges();
+                        _reportRepo.CreateReport(new Report {ReportDate = DateTime.Now, User = currentUser});
+                        _reportRepo.SaveChanges();
                     }
                 }
                 return RedirectToAction("Index", "Home");
@@ -239,7 +256,7 @@ namespace HungryHungryGeek.Controllers
         {
             if (DateTime.Now.Hour >= 12)
             {
-                if (db.Reports.ToList().All(x => x.ReportDate.Date != DateTime.Today))
+                if (_reportRepo.AnyWithDate(DateTime.Today))
                 {
                     return View(false);
                 }
@@ -254,13 +271,13 @@ namespace HungryHungryGeek.Controllers
             }
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
+        //protected override void Dispose(bool disposing)
+        //{
+        //    if (disposing)
+        //    {
+        //        db.Dispose();
+        //    }
+        //    base.Dispose(disposing);
+        //}
     }
 }

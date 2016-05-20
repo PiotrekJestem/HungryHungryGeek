@@ -122,6 +122,10 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IRepo\IDishRepo.cs" />
+    <Compile Include="IRepo\IHungryHungryGeekContext.cs" />
+    <Compile Include="IRepo\IOrderRepo.cs" />
+    <Compile Include="IRepo\IReportRepo.cs" />
     <Compile Include="Migrations\201605191911423_starting.cs" />
     <Compile Include="Migrations\201605191911423_starting.Designer.cs">
       <DependentUpon>201605191911423_starting.cs</DependentUpon>
@@ -135,6 +139,9 @@
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Views\AccountViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repo\DishRepo.cs" />
+    <Compile Include="Repo\OrderRepo.cs" />
+    <Compile Include="Repo\ReportRepo.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201605191911423_starting.resx">

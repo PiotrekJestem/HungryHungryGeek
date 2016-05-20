@@ -1,9 +1,10 @@
 ﻿using System.Data.Entity;
 using Microsoft.AspNet.Identity.EntityFramework;
+using Repository.IRepo;
 
 namespace Repository.Models
 {
-    public class HungryHungryGeekContext : IdentityDbContext
+    public class HungryHungryGeekContext : IdentityDbContext, IHungryHungryGeekContext
     {
         public HungryHungryGeekContext()
             : base("DefaultConnection")
