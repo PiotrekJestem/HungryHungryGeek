@@ -25,5 +25,17 @@ namespace Repository.Models
         public virtual Meal MealToOrder { get; set; }
 
         public virtual User User { get; set; }
+
+        public override string ToString()
+        {
+            var orderDetails = "\nOrdered dishes: ";
+            double orderCost = 0;
+            foreach (var dish in MealToOrder.Dishes)
+            {
+                orderDetails += dish.Name + ", ";
+                orderCost += dish.Price;
+            }
+            return "\n\n" + User + orderDetails + "Total cost: " + orderCost;
+        }
     }
 }

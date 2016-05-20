@@ -25,5 +25,10 @@ namespace Repository.Models
             // Add custom user claims here
             return userIdentity;
         }
+
+        public override string ToString()
+        {
+            return FirstName + " " + LastName;
+        }
     }
 }

@@ -1,11 +1,13 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using Repository.Models;
 
 namespace HungryHungryGeek.Controllers
@@ -18,7 +20,7 @@ namespace HungryHungryGeek.Controllers
         // GET: Dishes
         public ActionResult Index()
         {
-            if(DateTime.Now.Hour >= 12)
+            if (DateTime.Now.Hour >= 12)
                 return RedirectToAction("Volunteer");
             return View(db.Dishes.ToList());
         }
@@ -46,8 +48,6 @@ namespace HungryHungryGeek.Controllers
         }
 
         // POST: Dishes/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "DishId,Name,Description,Price")] Dish dish)
@@ -79,8 +79,6 @@ namespace HungryHungryGeek.Controllers
         }
 
         // POST: Dishes/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "DishId,Name,Description,Price")] Dish dish)
@@ -121,15 +119,6 @@ namespace HungryHungryGeek.Controllers
             return RedirectToAction("Index");
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
         public ActionResult AddToCart(int? id)
         {
             if (id == null)
@@ -153,7 +142,6 @@ namespace HungryHungryGeek.Controllers
 
         public ActionResult Cart()
         {
-
             var dishes = System.Web.HttpContext.Current.Session["cartContent"] as List<Dish> ?? new List<Dish>();
             return View(dishes);
         }
@@ -172,12 +160,13 @@ namespace HungryHungryGeek.Controllers
             return RedirectToAction("Cart");
         }
 
-        public ActionResult Submit()
+        public async Task<ActionResult> Submit()
         {
             var dishes = System.Web.HttpContext.Current.Session["cartContent"] as List<Dish>;
+            var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            var currentUser = db.Users.Find(User.Identity.GetUserId());
             if (dishes != null)
             {
-                var currentUser = db.Users.Find(User.Identity.GetUserId());
                 var createdMeal = new Meal
                 {
                     Dishes = dishes
@@ -188,6 +177,12 @@ namespace HungryHungryGeek.Controllers
                     OrderDate = DateTime.Now,
                     User = currentUser
                 };
+                await userManager.EmailService.SendAsync(new IdentityMessage
+                {
+                    Destination = currentUser.Email,
+                    Subject = "HungryHungryGeek - Your order",
+                    Body = prepareMailBodyForSingleOrder(order)
+                });
                 db.Orders.Add(order);
                 db.SaveChanges();
                 System.Web.HttpContext.Current.Session.Remove("cartContent");
@@ -196,16 +191,25 @@ namespace HungryHungryGeek.Controllers
             return RedirectToAction("Index", "Dishes");
         }
 
-        public ActionResult CompleteOrders()
+        [HttpPost]
+        public async Task<ActionResult> CompleteOrders()
         {
             if (DateTime.Now.Hour >= 12)
             {
                 if (db.Reports.ToList().All(x => x.ReportDate.Date != DateTime.Today))
                 {
-                    var currentUser = db.Users.Find(User.Identity.GetUserId());
+                    // Very poor performance, but will do for PoC
                     var orders = db.Orders.ToList().Where(x => x.OrderDate.Date == DateTime.Today).ToList();
+                    var userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                    var currentUser = db.Users.Find(User.Identity.GetUserId());
                     if (orders.Any())
                     {
+                        await userManager.EmailService.SendAsync(new IdentityMessage
+                        {
+                            Destination = currentUser.Email,
+                            Subject = "HungryHungryGeek - Complete order",
+                            Body = prepareMailBodyForReport(orders)
+                        });
                         db.Reports.Add(new Report {ReportDate = DateTime.Now, User = currentUser});
                         db.SaveChanges();
                     }
@@ -213,6 +217,22 @@ namespace HungryHungryGeek.Controllers
                 return RedirectToAction("Index", "Home");
             }
             return RedirectToAction("Index", "Dishes");
+        }
+
+        private string prepareMailBodyForReport(IEnumerable<Order> orders)
+        {
+            var mailBody = "You've volunteered to complete today's order, here it is:\n\n";
+
+            foreach (var order in orders)
+            {
+                mailBody += order;
+            }
+            return mailBody;
+        }
+
+        private string prepareMailBodyForSingleOrder(Order order)
+        {
+            return "You successfully placed an order, here it is:\n\n" + order;
         }
 
         public ActionResult Volunteer()
@@ -232,6 +252,15 @@ namespace HungryHungryGeek.Controllers
             {
                 return RedirectToAction("Index", "Dishes");
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

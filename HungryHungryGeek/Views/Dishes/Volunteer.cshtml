@@ -3,14 +3,17 @@
 @{
     ViewBag.Title = "Complete today's orders";
 }
+@using (Html.BeginForm("CompleteOrders", "Dishes", new {FormMethod.Post}))
+{
+    <h2>Redeem today's orders</h2>
+    if (Model != true)
+    {
+        <p>If you want to complete today's orders for everyone then click below.</p>
+        <input type="submit" value="Submit" class="btn btn-default"/>
+    }
+    else
+    {
+        <p>Somebody's already completed today's orders.</p>
+    }
+}
 
-<h2>Redeem today's orders</h2>
-@if(Model != true)
-{
-<p>If you want to complete today's orders for everyone then click below.</p>
-@Html.ActionLink("Complete", "CompleteOrders")
-}
-else
-{
-<p>Somebody's already completed today's orders.</p>
-}
